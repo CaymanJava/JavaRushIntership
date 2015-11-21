@@ -1,0 +1,1 @@
+INSERT INTO User (name,age,isAdmin) VALUES ("Dmitriy",25,1),("Anastasiia",25,1),("Petr",19,0),("Evgeniy",40,1),("Olga",24,1),("Ivan",39,0),("Viktor",41,0),("Mariya",23,1),("Svetlana",26,1),("Albina",24,0),("Angelina",21,1),("Mila",31,1),("Andrej",22,1),("Eduard",23,1);

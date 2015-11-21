@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/mvc"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:beans="http://www.springframework.org/schema/beans"
+             xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+             xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd">
+
+    <annotation-driven />
+
+    <resources mapping="/resources/**" location="/resources/" />
+    <resources mapping="/images/**" location="/images/" />
+
+    <beans:bean
+            class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <beans:property name="prefix" value="/WEB-INF/views/" />
+        <beans:property name="suffix" value=".jsp" />
+    </beans:bean>
+
+    <beans:bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
+                destroy-method="close">
+        <beans:property name="driverClassName" value="com.mysql.jdbc.Driver" />
+        <beans:property name="url" value="jdbc:mysql://localhost:3306/test?characterEncoding=UTF-8" />
+       <!-- <beans:property name="url" value="jdbc:mysql://localhost:3306/test?characterEncoding=cp1251" />-->
+        <beans:property name="username" value="root" />
+        <beans:property name="password" value="root" />
+    </beans:bean>
+
+    <beans:bean id="hibernate5AnnotatedSessionFactory"
+                class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
+        <beans:property name="dataSource" ref="dataSource" />
+        <beans:property name="annotatedClasses">
+            <beans:list>
+                <beans:value>JavaRushIntership.entity.User</beans:value>
+            </beans:list>
+        </beans:property>
+        <beans:property name="hibernateProperties">
+            <beans:props>
+                <beans:prop key="hibernate.enable_lazy_load_no_trans">true
+                </beans:prop>
+                <beans:prop key="hibernate.dialect">JavaRushIntership.CustomMySQLDialect
+                </beans:prop>
+                <beans:prop key="hibernate.connection.Charset">UTF-8
+                </beans:prop>
+                <beans:prop key="hibernate.connection.CharacterEncoding">UTF-8
+                </beans:prop>
+                <beans:prop key="hibernate.connection.Useunicode">true
+                </beans:prop>
+                <beans:prop key="hibernate.show_sql">true
+                </beans:prop>
+                <beans:prop key="hibernate.search.default.directory_provider">org.hibernate.search.store.impl.FSDirectoryProvider
+                </beans:prop>
+                <beans:prop key="hibernate.search.default.indexBase">./lucene/indexes
+                </beans:prop>
+                <beans:prop key="hibernate.hbm2ddl.auto">create</beans:prop>
+                <beans:prop key="hibernate.hbm2ddl.import_files">defaultUsers.sql</beans:prop>
+            </beans:props>
+        </beans:property>
+    </beans:bean>
+
+    <beans:bean id="userDAO" class="JavaRushIntership.dao.UserDAOImpl">
+        <beans:property name="sessionFactory" ref="hibernate5AnnotatedSessionFactory" />
+    </beans:bean>
+
+    <beans:bean id="userService" class="JavaRushIntership.service.UserServiceImpl">
+        <beans:property name="userDAO" ref="userDAO"/>
+    </beans:bean>
+
+    <beans:bean id="pager" class="JavaRushIntership.Paging">
+        <beans:property name="nameFilter" value=""/>
+        <beans:property name="pageSize" value="10"/>
+        <beans:property name="pageNumber" value="1"/>
+        <beans:property name="size" value="1"/>
+    </beans:bean>
+
+    <context:component-scan base-package="JavaRushIntership" />
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+    <beans:bean id="transactionManager" class="org.springframework.orm.hibernate5.HibernateTransactionManager">
+        <beans:property name="sessionFactory" ref="hibernate5AnnotatedSessionFactory" />
+    </beans:bean>
+</beans:beans>
